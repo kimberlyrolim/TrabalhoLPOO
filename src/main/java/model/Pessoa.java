@@ -77,7 +77,6 @@ public class Pessoa {
     }
     
     public String exibirDados(){
-        // Define o mesmo formatador usado para a criação da string
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         String aux = "Pessoa cadastrada: \n";
         aux += "Nome: " + nome+ "\n";

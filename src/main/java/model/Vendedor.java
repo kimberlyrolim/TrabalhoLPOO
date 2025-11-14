@@ -36,9 +36,8 @@ public class Vendedor extends Pessoa implements Serializable{
 
         return aux;
     }
-     
-    // 1 vendedor -> várias vendas
-    @OneToMany(mappedBy = "vendedor")
+
+    @OneToMany(mappedBy = "vendedor") //um vendedor pra varias vendas
     private List<Venda> vendas;
     
     public List<Venda> getVendas() { return vendas; }
