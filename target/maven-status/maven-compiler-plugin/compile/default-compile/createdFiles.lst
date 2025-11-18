@@ -1,4 +1,3 @@
-model\dao\InterfaceBD.class
 view\CadastroProdutoJD$3.class
 model\dao\VendedorDAO.class
 view\ListaClienteJF$4.class
@@ -36,8 +35,6 @@ view\ListaClienteJF$2.class
 view\ListaProdutoJF$5.class
 view\PrincipalJF$4.class
 view\CadastroClienteJD$2.class
-model\dao\ClienteDAO.class
-model\dao\PersistenciaJPA.class
 view\CadastroClienteJD$3$1.class
 view\ListaVendedorJF.class
 teste\TesteConexaoJU.class
@@ -49,7 +46,6 @@ view\ListaProdutoJF$2.class
 view\PrincipalJF$6.class
 teste\TestePersisteProduto.class
 view\ListaVendedorJF$3.class
-model\dao\ProdutoDAO.class
 view\ListaClienteJF$3.class
 view\CadastroProdutoJD$4.class
 view\ListaVendas$3.class

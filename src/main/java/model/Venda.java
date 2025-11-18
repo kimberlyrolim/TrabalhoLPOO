@@ -2,32 +2,36 @@ package model;
 
 import model.dao.Util;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "vendas")
-public class Venda implements Serializable{
+public class Venda implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "venda_id")
     private int id;
-    
+
     @Column(name = "venda_data_hora", nullable = false)
-    private LocalDateTime dataVenda;
-    
+    private LocalDate dataVenda;
+
     @Column(name = "venda_valor", columnDefinition = "numeric(12,2)")
     private double valorVenda;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "venda_forma_contrato")
     private FormaContrato formaContrato;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "venda_forma_pgto")
     private FormaPgto formaPgto;
-    
+
     @ManyToOne
     @JoinColumn(name = "venda_cliente")
     private Cliente cliente;
@@ -36,17 +40,14 @@ public class Venda implements Serializable{
     @JoinColumn(name = "venda_vendedor")
     private Vendedor vendedor;
 
-    @ManyToOne
-    @JoinColumn(name = "venda_produto")
-    private Produto produto;
-    
-    
+    @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ItemVenda> itensVenda = new java.util.ArrayList<>();
 
-    public LocalDateTime getDataVenda() {
+    public LocalDate getDataVenda() {
         return dataVenda;
     }
 
-    public void setDataVenda(LocalDateTime dataVenda) {
+    public void setDataVenda(LocalDate dataVenda) {
         this.dataVenda = dataVenda;
     }
 
@@ -90,17 +91,38 @@ public class Venda implements Serializable{
         this.vendedor = vendedor;
     }
 
-    public Produto getProduto() {
-        return produto;
+    public List<ItemVenda> getItensVenda() {
+        return itensVenda;
     }
 
-    public void setProduto(Produto produto) {
-        this.produto = produto;
+    public void setItensVenda(List<ItemVenda> itensVenda) {
+        this.itensVenda = itensVenda;
+    }
+
+    public void adicionarItem(ItemVenda item) {
+        // Garante que a lista está inicializada antes de adicionar
+        if (this.itensVenda == null) {
+            this.itensVenda = new java.util.ArrayList<>();
+        }
+        this.itensVenda.add(item);
+        // Configura a relação bidirecional (ItemVenda aponta de volta para esta Venda)
+        item.setVenda(this);
+    }
+
+    public void atualizarValorTotal() {
+        double total = 0.0;
+        // Percorre todos os itens da lista
+        for (ItemVenda item : getItensVenda()) {
+            // Usa o método calcularSubTotal() da classe ItemVenda
+            total += item.calcularSubTotal();
+        }
+        // Define o valor total da venda
+        this.valorVenda = total;
     }
 
     @Override
     public String toString() {
-        return Util.formatarDataHora(dataVenda);
+        return Util.formatarData(dataVenda);
     }
 
     public int getId() {
@@ -112,16 +134,21 @@ public class Venda implements Serializable{
     }
 
     public String exibirDados() {
-        
+
         String aux = "Dados da Venda:\n";
-        aux += "Data|Hora:"+Util.formatarDataHora(dataVenda)+"\n";
-        aux += "Produto"+getProduto().getProdNome()+"\n";
-        aux += "Cliente: "+getCliente().getNome()+"\n";
-        aux += "Vendedor: "+getVendedor().getNome()+"\n";
-        aux += "Forma de Contrato: "+formaContrato+"\n";
-        aux += "Forma de Pagamento: "+formaPgto+"\n";
-          return aux;
+        aux += "Data:" + Util.formatarData(dataVenda) + "\n";
+        //aux += "Produto"+getProduto().getProdNome()+"\n";
+        aux += "\nProdutos Vendidos:\n";
+        for (ItemVenda item : getItensVenda()) {
+            aux += " - " + item.getProduto().getProdNome()
+                    + " (Qtde: " + item.getQuantidade()
+                    + " | Subtotal: " + item.calcularSubTotal() + ")\n";
+        }
+        aux += "Cliente: " + getCliente().getNome() + "\n";
+        aux += "Vendedor: " + getVendedor().getNome() + "\n";
+        aux += "Forma de Contrato: " + formaContrato + "\n";
+        aux += "Forma de Pagamento: " + formaPgto + "\n";
+        return aux;
     }
-    
-    
+
 }

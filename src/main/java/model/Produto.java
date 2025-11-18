@@ -90,7 +90,10 @@ public class Produto implements Serializable {
         this.prodDisponivel = disponivel;
     }
 
-    
+    @Override
+    public String toString() {
+        return this.prodNome;
+    }
 
 
     
